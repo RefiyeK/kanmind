@@ -1,0 +1,97 @@
+# ============================================
+# Python
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Distribution / Packaging
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+MANIFEST
+
+# ============================================
+# Virtuelle Umgebungen (Virtual Environments)
+# ============================================
+.venv/
+venv/
+env/
+ENV/
+
+# ============================================
+# Django
+# ============================================
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# ============================================
+# Umgebungsvariablen & Geheimnisse
+# ============================================
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+secrets.json
+
+# ============================================
+# IDE & Editor
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ============================================
+# Tests & Coverage
+# ============================================
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# ============================================
+# Jupyter / IPython
+# ============================================
+.ipynb_checkpoints/
+profile_default/
+ipython_config.py
+
+# ============================================
+# Betriebssystem-spezifisch
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ============================================
+# Node (falls Frontend hinzugefügt wird)
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
