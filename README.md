@@ -4,9 +4,10 @@ A Kanban-style project management backend built with Django and Django REST Fram
 
 ## Tech Stack
 
-- Python 3.x
-- Django 6.0
-- Django REST Framework
+- Python 3.12
+- Django 6.0.5
+- Django REST Framework 3.17
+- python-dotenv (for environment variables)
 - SQLite (development)
 
 ## Setup
@@ -38,13 +39,40 @@ source env/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Run database migrations
+### 4. Create your `.env` file
+
+This project loads sensitive configuration (e.g., `SECRET_KEY`) from a `.env` file in the project root. A template is provided as `.env.example`.
+
+Copy the template:
+
+**Windows (PowerShell):**
+
+```bash
+copy .env.example .env
+```
+
+**macOS/Linux:**
+
+```bash
+cp .env.example .env
+```
+
+Then open `.env` and replace the placeholder `SECRET_KEY` with a real value. You can generate a new Django secret key with:
+
+```bash
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
+
+> ⚠️ Never commit the `.env` file — it is already excluded via `.gitignore`.
+
+
+### 5. Run database migrations
 
 ```bash
 python manage.py migrate
 ```
 
-### 5. Create a superuser
+### 6. Create a superuser
 
 ```bash
 python manage.py createsuperuser
@@ -52,7 +80,7 @@ python manage.py createsuperuser
 
 You will be prompted for an email and password.
 
-### 6. Start the development server
+### 7. Start the development server
 
 ```bash
 python manage.py runserver
@@ -122,12 +150,18 @@ Example workflow:
 
 A Django admin panel is available at `http://127.0.0.1:8000/admin/`. Use the superuser credentials created during setup to log in.
 
-## Project Structure
 
+## Project Structure
 ```
 core/                # Project settings and main URL routing
-auth_app/            # User authentication (registration, login, email check)
+auth_app/            # User authentication
+  ├── api/           # Serializers, views, urls, permissions
+  └── models.py      # Custom User model
 kanban_app/          # Boards, tasks, comments
+  ├── api/           # Serializers, views, urls, permissions
+  └── models.py      # Board, Task, Comment models
 manage.py            # Django management script
 requirements.txt     # Python dependencies
+.env                 # Environment variables (not committed)
+.gitignore           # Files excluded from Git
 ```
