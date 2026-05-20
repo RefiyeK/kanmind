@@ -11,6 +11,7 @@ from .permissions import (
 )
 from .serializers import (
     BoardSerializer,
+    BoardDetailSerializer,
     BoardUpdateSerializer,
     TaskSerializer,
     TaskUpdateSerializer,
@@ -50,7 +51,7 @@ class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
         """Selects the appropriate serializer based on the HTTP method."""
         if self.request.method == 'PATCH':
             return BoardUpdateSerializer
-        return BoardSerializer
+        return BoardDetailSerializer
 
 
 class TaskAssignedToMeView(generics.ListAPIView):

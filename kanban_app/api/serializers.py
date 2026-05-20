@@ -222,6 +222,25 @@ class TaskUpdateSerializer(serializers.ModelSerializer):
         return None
 
 
+class BoardDetailSerializer(serializers.ModelSerializer):
+    """Serializer for retrieving a single board with nested member and task data."""
+
+    owner_id = serializers.IntegerField(source='owner.id', read_only=True)
+    members = serializers.SerializerMethodField()
+    tasks = TaskSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Board
+        fields = ['id', 'title', 'owner_id', 'members', 'tasks']
+
+    def get_members(self, obj):
+        """Returns the full member data as a list of nested objects."""
+        return [
+            {'id': m.id, 'email': m.email, 'fullname': m.fullname}
+            for m in obj.members.all()
+        ]
+
+
 class CommentSerializer(serializers.ModelSerializer):
     """Serializer for task comments. 'author' is returned as the fullname string."""
 
