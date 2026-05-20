@@ -163,5 +163,6 @@ kanban_app/          # Boards, tasks, comments
 manage.py            # Django management script
 requirements.txt     # Python dependencies
 .env                 # Environment variables (not committed)
+.env.example         # Template for environment variables
 .gitignore           # Files excluded from Git
 ```
