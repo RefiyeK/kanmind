@@ -3,6 +3,10 @@ from rest_framework import serializers
 from auth_app.models import User
 from kanban_app.models import Board, Task, Comment
 
+def _is_board_member(user, board):
+    """Returns True if the user is the owner or a member of the board."""
+    return board.owner == user or board.members.filter(id=user.id).exists()
+
 
 class BoardSerializer(serializers.ModelSerializer):
     """Serializer for boards with computed fields for members and tasks."""
@@ -163,6 +167,22 @@ class TaskSerializer(serializers.ModelSerializer):
     def get_comments_count(self, obj):
         """Returns the total number of comments on the task."""
         return obj.comments.count()
+    
+    def validate(self, attrs):
+        """Validates that the request user, assignee, and reviewer are board members."""
+        board = attrs.get('board') or (self.instance.board if self.instance else None)
+        if board is None:
+            return attrs
+        user = self.context['request'].user
+        if not _is_board_member(user, board):
+            raise serializers.ValidationError("You must be a member of the board.")
+        for role in ('assignee', 'reviewer'):
+            person = attrs.get(role)
+            if person and not _is_board_member(person, board):
+                raise serializers.ValidationError(
+                    {f"{role}_id": "Must be a member of the board."}
+                )
+        return attrs
 
 
 class TaskUpdateSerializer(serializers.ModelSerializer):
@@ -220,6 +240,22 @@ class TaskUpdateSerializer(serializers.ModelSerializer):
                 'fullname': obj.reviewer.fullname,
             }
         return None
+    
+    def validate(self, attrs):
+        """Validates that the request user, assignee, and reviewer are board members."""
+        board = attrs.get('board') or (self.instance.board if self.instance else None)
+        if board is None:
+            return attrs
+        user = self.context['request'].user
+        if not _is_board_member(user, board):
+            raise serializers.ValidationError("You must be a member of the board.")
+        for role in ('assignee', 'reviewer'):
+            person = attrs.get(role)
+            if person and not _is_board_member(person, board):
+                raise serializers.ValidationError(
+                    {f"{role}_id": "Must be a member of the board."}
+                )
+        return attrs
 
 
 class BoardDetailSerializer(serializers.ModelSerializer):

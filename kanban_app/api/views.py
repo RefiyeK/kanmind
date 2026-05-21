@@ -8,6 +8,7 @@ from .permissions import (
     IsTaskCreatorOrBoardOwner,
     IsCommentAuthor,
     IsBoardMemberForComment,
+    IsBoardOwner, 
 )
 from .serializers import (
     BoardSerializer,
@@ -52,6 +53,12 @@ class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method == 'PATCH':
             return BoardUpdateSerializer
         return BoardDetailSerializer
+    
+    def get_permissions(self):
+        """Selects the appropriate permissions based on the HTTP method."""
+        if self.request.method == 'DELETE':
+            return [IsAuthenticated(), IsBoardOwner()]
+        return [IsAuthenticated()]
 
 
 class TaskAssignedToMeView(generics.ListAPIView):

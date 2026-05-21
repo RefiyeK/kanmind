@@ -47,3 +47,12 @@ class IsBoardMemberForComment(BasePermission):
             task.board.owner == user
             or task.board.members.filter(id=user.id).exists()
         )
+
+
+
+class IsBoardOwner(BasePermission):
+    """Allows only the board owner to perform the action."""
+
+    def has_object_permission(self, request, view, obj):
+        """Checks whether the user is the owner of the board."""
+        return obj.owner == request.user
