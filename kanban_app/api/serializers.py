@@ -169,13 +169,10 @@ class TaskSerializer(serializers.ModelSerializer):
         return obj.comments.count()
     
     def validate(self, attrs):
-        """Validates that the request user, assignee, and reviewer are board members."""
+        """Validates that the assignee and reviewer are board members."""
         board = attrs.get('board') or (self.instance.board if self.instance else None)
         if board is None:
             return attrs
-        user = self.context['request'].user
-        if not _is_board_member(user, board):
-            raise serializers.ValidationError("You must be a member of the board.")
         for role in ('assignee', 'reviewer'):
             person = attrs.get(role)
             if person and not _is_board_member(person, board):

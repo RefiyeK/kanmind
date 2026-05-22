@@ -1,6 +1,7 @@
 from django.db.models import Q
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import NotFound, PermissionDenied
 
 from kanban_app.models import Board, Task, Comment
 from .permissions import (
@@ -51,7 +52,7 @@ class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method == 'PATCH':
             return BoardUpdateSerializer
         return BoardDetailSerializer
-    
+
     def get_permissions(self):
         """Selects the appropriate permissions based on the HTTP method."""
         if self.request.method == 'DELETE':
@@ -89,6 +90,17 @@ class TaskCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         """Sets the currently authenticated user as the creator of the new task."""
         serializer.save(created_by=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        """Checks board existence (404) and membership (403) before creating the task."""
+        board = Board.objects.filter(pk=request.data.get('board')).first()
+        if board is None:
+            raise NotFound("Board not found.")
+        user = request.user
+        if board.owner != user and not board.members.filter(id=user.id).exists():
+            raise PermissionDenied(
+                "You must be a member of the board to create a task.")
+        return super().create(request, *args, **kwargs)
 
 
 class TaskUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
