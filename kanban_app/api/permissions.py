@@ -1,4 +1,5 @@
 from rest_framework.permissions import BasePermission
+from rest_framework.exceptions import NotFound
 
 from kanban_app.models import Task
 
@@ -41,7 +42,7 @@ class IsBoardMemberForComment(BasePermission):
         task_id = view.kwargs.get('task_id')
         task = Task.objects.filter(pk=task_id).first()
         if task is None:
-            return False
+            raise NotFound("Task not found.")
         user = request.user
         return (
             task.board.owner == user
