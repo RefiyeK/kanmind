@@ -8,7 +8,8 @@ from .permissions import (
     IsTaskCreatorOrBoardOwner,
     IsCommentAuthor,
     IsBoardMemberForComment,
-    IsBoardOwner, 
+    IsBoardOwner,
+    IsBoardMemberOrOwner,
 )
 from .serializers import (
     BoardSerializer,
@@ -42,11 +43,8 @@ class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
     """View for retrieving, updating, and deleting a single board."""
 
     def get_queryset(self):
-        """Returns only boards where the user is the owner or a member."""
-        user = self.request.user
-        return Board.objects.filter(
-            Q(owner=user) | Q(members=user)
-        ).distinct()
+        """Returns only boards; access is controlled by the permissions."""
+        return Board.objects.all()
 
     def get_serializer_class(self):
         """Selects the appropriate serializer based on the HTTP method."""
@@ -58,7 +56,7 @@ class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
         """Selects the appropriate permissions based on the HTTP method."""
         if self.request.method == 'DELETE':
             return [IsAuthenticated(), IsBoardOwner()]
-        return [IsAuthenticated()]
+        return [IsAuthenticated(), IsBoardMemberOrOwner()]
 
 
 class TaskAssignedToMeView(generics.ListAPIView):

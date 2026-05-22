@@ -49,10 +49,15 @@ class IsBoardMemberForComment(BasePermission):
         )
 
 
-
 class IsBoardOwner(BasePermission):
     """Allows only the board owner to perform the action."""
 
     def has_object_permission(self, request, view, obj):
         """Checks whether the user is the owner of the board."""
         return obj.owner == request.user
+
+
+class IsBoardMemberOrOwner(BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        return obj.owner == request.user or request.user in obj.members.all()
